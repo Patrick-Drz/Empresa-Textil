@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" class="h-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Proveedores</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.3/dist/flatly/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+      body { display: flex; flex-direction: column; min-height: 100vh; }
+      .footer { flex-shrink: 0; }
+      main { flex: 1 0 auto; }
+    </style>
+</head>
+<body class="d-flex flex-column">
+
+    <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/home"><i class="bi bi-scissors"></i> Gestión Textil</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarColor01">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/home"><i class="bi bi-house-door"></i> Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/suppliers"><i class="bi bi-truck"></i> Proveedores
+                            <span class="visually-hidden">(current)</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/materials"><i class="bi bi-stack"></i> Materiales</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/orders"><i class="bi bi-cart"></i> Órdenes</a>
+                    </li>
+                </ul>
+                <form th:action="@{/logout}" method="post" class="d-flex">
+                    <button class="btn btn-secondary my-2 my-sm-0" type="submit"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-shrink-0">
+        <div class="container mt-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h1><i class="bi bi-truck"></i> Gestión de Proveedores</h1>
+                <a th:href="@{/suppliers/new}" class="btn btn-success"><i class="bi bi-plus-circle"></i> Nuevo Proveedor</a>
+            </div>
+            
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <table class="table table-striped table-hover align-middle">
+                        <thead class="table-primary">
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Contacto</th>
+                                <th>Teléfono</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="supplier : ${suppliers}">
+                                <td th:text="${supplier.id}">1</td>
+                                <td th:text="${supplier.name}">Prov-A</td>
+                                <td th:text="${supplier.contactPerson}">Juan Perez</td>
+                                <td th:text="${supplier.phone}">999888777</td>
+                                <td>
+                                    <a th:href="@{/suppliers/edit/{id}(id=${supplier.id})}" class="btn btn-warning btn-sm" title="Editar">
+                                        <i class="bi bi-pencil-fill"></i>
+                                    </a>
+                                    <a th:href="@{/suppliers/delete/{id}(id=${supplier.id})}" class="btn btn-danger btn-sm" title="Eliminar">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <footer class="footer mt-auto py-3 bg-light">
+      <div class="container text-center">
+        <span class="text-muted">
+            © 2025 Gestión Textil S.A.C. - Todos los derechos reservados.
+        </span>
+      </div>
+    </footer>
+
+</body>
+</html>

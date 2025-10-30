@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" class="h-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Formulario de Material</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.3/dist/flatly/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+      body { display: flex; flex-direction: column; min-height: 100vh; }
+      .footer { flex-shrink: 0; }
+      main { flex: 1 0 auto; }
+    </style>
+</head>
+<body class="d-flex flex-column">
+
+    <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/home"><i class="bi bi-scissors"></i> Gestión Textil</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarColor01">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/home"><i class="bi bi-house-door"></i> Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/suppliers"><i class="bi bi-truck"></i> Proveedores</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/materials"><i class="bi bi-stack"></i> Materiales
+                            <span class="visually-hidden">(current)</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/orders"><i class="bi bi-cart"></i> Órdenes</a>
+                    </li>
+                </ul>
+                <form th:action="@{/logout}" method="post" class="d-flex">
+                    <button class="btn btn-secondary my-2 my-sm-0" type="submit"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+    
+    <main class="flex-shrink-0">
+        <div class="container mt-4">
+            <div class="row">
+                <div class="col-md-8 offset-md-2">
+                    <div class="card shadow-sm">
+                        <div class="card-header">
+                            <h2 class="h3" th:text="${material.id == null} ? 'Nuevo Material' : 'Editar Material'">Formulario</h2>
+                        </div>
+                        <div class="card-body">
+                            <form th:action="@{/materials/save}" th:object="${material}" method="post">
+                                <input type="hidden" th:field="*{id}" />
+                                
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Nombre:</label>
+                                    <input type="text" th:field="*{name}" class="form-control" id="name"/>
+                                    <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger small"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Descripción:</label>
+                                    <input type="text" th:field="*{description}" class="form-control" id="description" />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="supplier" class="form-label">Proveedor:</label>
+                                    <select th:field="*{supplier.id}" class="form-select" id="supplier">
+                                        <option value="">Seleccione un proveedor</option>
+                                        <option th:each="supplier : ${suppliers}" 
+                                                th:value="${supplier.id}" 
+                                                th:text="${supplier.name}"></option>
+                                    </select>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="stockQuantity" class="form-label">Stock Inicial (o actual):</label>
+                                        <input type="number" th:field="*{stockQuantity}" class="form-control" id="stockQuantity" />
+                                        <div th:if="${#fields.hasErrors('stockQuantity')}" th:errors="*{stockQuantity}" class="text-danger small"></div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="lowStockThreshold" class="form-label">Umbral de Bajo Stock:</label>
+                                        <input type="number" th:field="*{lowStockThreshold}" class="form-control" id="lowStockThreshold" />
+                                        <div th:if="${#fields.hasErrors('lowStockThreshold')}" th:errors="*{lowStockThreshold}" class="text-danger small"></div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="expirationDate" class="form-label">Fecha de Vencimiento (Opcional):</label>
+                                    <input type="date" th:field="*{expirationDate}" class="form-control" id="expirationDate" />
+                                </div>
+
+                                <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Guardar</button>
+                                <a th:href="@{/materials}" class="btn btn-secondary"><i class="bi bi-x-circle"></i> Cancelar</a>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <footer class="footer mt-auto py-3 bg-light">
+      <div class="container text-center">
+        <span class="text-muted">
+            © 2025 Gestión Textil S.A.C. - Todos los derechos reservados.
+        </span>
+      </div>
+    </footer>
+
+</body>
+</html>

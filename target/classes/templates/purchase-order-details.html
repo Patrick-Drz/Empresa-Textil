@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" class="h-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Detalle de Orden</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.3/dist/flatly/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+      body { display: flex; flex-direction: column; min-height: 100vh; }
+      .footer { flex-shrink: 0; }
+      main { flex: 1 0 auto; }
+    </style>
+</head>
+<body class="d-flex flex-column">
+
+    <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/home"><i class="bi bi-scissors"></i> Gestión Textil</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarColor01">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/home"><i class="bi bi-house-door"></i> Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/suppliers"><i class="bi bi-truck"></i> Proveedores</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/materials"><i class="bi bi-stack"></i> Materiales</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/orders"><i class="bi bi-cart"></i> Órdenes
+                            <span class="visually-hidden">(current)</span>
+                        </a>
+                    </li>
+                </ul>
+                <form th:action="@{/logout}" method="post" class="d-flex">
+                    <button class="btn btn-secondary my-2 my-sm-0" type="submit"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+    
+    <main class="flex-shrink-0">
+        <div class="container mt-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h1>Detalle de Orden: #<span th:text="${order.id}">1</span></h1>
+                <a th:href="@{/orders}" class="btn btn-outline-primary"><i class="bi bi-arrow-left"></i> Volver a la lista</a>
+            </div>
+
+            <div class="card mb-3 shadow-sm">
+                <div class="card-header fs-5">
+                    Información de la Orden
+                </div>
+                <div class="card-body">
+                    <p><strong>Proveedor:</strong> <span th:text="${order.supplier.name}"></span></p>
+                    <p><strong>Estado:</strong> 
+                        <span th:text="${order.status}" 
+                              th:classappend="${order.status.name() == 'PENDING'} ? 'badge bg-warning text-dark' : (${order.status.name() == 'RECEIVED'} ? 'badge bg-success' : 'badge bg-danger')">
+                        </span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-7">
+                    <div th:if="${order.status.name() == 'PENDING'}" class="alert alert-info shadow-sm">
+                        <h5><i class="bi bi-box-seam"></i> Confirmar Recepción</h5>
+                        <p>Al confirmar, el stock de los materiales listados aumentará.</p>
+                        <form th:action="@{/orders/receive/{orderId}(orderId=${order.id})}" method="post">
+                            <button type="submit" class="btn btn-success fw-bold"><i class="bi bi-check-circle-fill"></i> Confirmar Recepción de Mercancía</button>
+                        </form>
+                    </div>
+                    
+                    <div th:if="${order.status.name() != 'PENDING'}" class="alert alert-success shadow-sm">
+                        <i class="bi bi-check-all"></i> Esta orden ya fue procesada y no puede ser modificada.
+                    </div>
+                    
+                    <h3 class="mt-4">Materiales en esta Orden</h3>
+                    <div class="card shadow-sm">
+                        <div class="card-body table-responsive">
+                            <table class="table table-bordered table-striped align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Material</th>
+                                        <th>Cantidad</th>
+                                        <th>Precio Unitario</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="detail : ${order.orderDetails}">
+                                        <td th:text="${detail.material.name}">Tela</td>
+                                        <td th:text="${detail.quantity}">100</td>
+                                        <td th:text="${'$' + #numbers.formatDecimal(detail.unitPrice, 1, 2)}">$10.50</td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(order.orderDetails)}">
+                                        <td colspan="3" class="text-center">Aún no hay materiales en esta orden.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-5" th:if="${order.status.name() == 'PENDING'}">
+                    <div class="card shadow-sm">
+                        <div class="card-header fs-5">
+                            <i class="bi bi-plus-circle"></i> Añadir Material a la Orden
+                        </div>
+                        <div class="card-body">
+                            <form th:action="@{/orders/details/{orderId}/add(orderId=${order.id})}" th:object="${newDetail}" method="post">
+                                <div class="mb-3">
+                                    <label for="material" class="form-label">Material:</label>
+                                    <select th:field="*{material.id}" class="form-select" id="material" required>
+                                        <option value="">Seleccione material</option>
+                                        <option th:each="mat : ${materials}" 
+                                                th:value="${mat.id}" 
+                                                th:text="${mat.name} + ' (Stock: ' + ${mat.stockQuantity} + ')'"></option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="quantity" class="form-label">Cantidad:</label>
+                                    <input type="number" th:field="*{quantity}" class="form-control" id="quantity" required min="1" />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="unitPrice" class="form-label">Precio Unitario:</label>
+                                    <input type="number" th:field="*{unitPrice}" class="form-control" id="unitPrice" step="0.01" required min="0" />
+                                </div>
+                                <button type="submit" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Añadir a la Orden</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <footer class="footer mt-auto py-3 bg-light">
+      <div class="container text-center">
+        <span class="text-muted">
+            © 2025 Gestión Textil S.A.C. - Todos los derechos reservados.
+        </span>
+      </div>
+    </footer>
+
+</body>
+</html>

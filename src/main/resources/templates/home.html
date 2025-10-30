@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" class="h-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gestión Textil - Inicio</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.3/dist/flatly/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <style>
+      body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+      .footer {
+        flex-shrink: 0;
+      }
+      main {
+        flex: 1 0 auto;
+      }
+    </style>
+</head>
+<body class="d-flex flex-column">
+
+    <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/home"><i class="bi bi-scissors"></i> Gestión Textil</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarColor01">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/home"><i class="bi bi-house-door"></i> Inicio
+                            <span class="visually-hidden">(current)</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/suppliers"><i class="bi bi-truck"></i> Proveedores</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/materials"><i class="bi bi-stack"></i> Materiales</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/orders"><i class="bi bi-cart"></i> Órdenes</a>
+                    </li>
+                </ul>
+                <form th:action="@{/logout}" method="post" class="d-flex">
+                    <button class="btn btn-secondary my-2 my-sm-0" type="submit"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-shrink-0">
+        <div class="container mt-4">
+            <h1 class="mb-4">Dashboard</h1>
+            
+            <div class="row">
+                <div class="col-lg-6" th:if="${!lowStockItems.isEmpty()}">
+                    <div class="alert alert-dismissible alert-warning">
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        <h4 class="alert-heading"><i class="bi bi-exclamation-triangle-fill"></i> ¡Alerta de Bajo Stock!</h4>
+                        <p class="mb-0">Los siguientes materiales están por agotarse:</p>
+                        <ul>
+                            <li th:each="item : ${lowStockItems}" 
+                                th:text="${item.name} + ' (Stock: ' + ${item.stockQuantity} + ' / Umbral: ' + ${item.lowStockThreshold} + ')'">
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-6" th:if="${!expiredItems.isEmpty()}">
+                    <div class="alert alert-dismissible alert-danger">
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        <h4 class="alert-heading"><i class="bi bi-calendar-x-fill"></i> ¡Alerta de Vencimiento!</h4>
+                        <p class="mb-0">Los siguientes materiales han vencido:</p>
+                        <ul>
+                            <li th:each="item : ${expiredItems}"
+                                th:text="${item.name} + ' (Venció: ' + ${item.expirationDate} + ')'">
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="mt-4">Módulos del Sistema</h3>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <div class="card border-primary shadow-sm h-100">
+                        <div class="card-header fs-4"><i class="bi bi-truck"></i> Proveedores</div>
+                        <div class="card-body">
+                            <p class="card-text">Registra, edita y administra tus proveedores de materiales.</p>
+                            <a th:href="@{/suppliers}" class="btn btn-primary">Gestionar Proveedores</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card border-primary shadow-sm h-100">
+                        <div class="card-header fs-4"><i class="bi bi-stack"></i> Materiales (Stock)</div>
+                        <div class="card-body">
+                            <p class="card-text">Controla tu inventario, define umbrales de stock y fechas de vencimiento.</p>
+                            <a th:href="@{/materials}" class="btn btn-primary">Gestionar Materiales</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card border-primary shadow-sm h-100">
+                        <div class="card-header fs-4"><i class="bi bi-cart"></i> Órdenes de Compra</div>
+                        <div class="card-body">
+                            <p class="card-text">Crea órdenes de compra y actualiza tu stock al recibirlas.</p>
+                            <a th:href="@{/orders}" class="btn btn-primary">Gestionar Órdenes</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <footer class="footer mt-auto py-3 bg-light">
+      <div class="container text-center">
+        <span class="text-muted">
+            © 2025 Gestión Textil S.A.C. - Todos los derechos reservados.
+        </span>
+      </div>
+    </footer>
+
+</body>
+</html>
