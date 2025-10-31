@@ -4,8 +4,6 @@ Sistema de aplicación web para la gestión de compras, proveedores y stock de m
 
 ## 📸 Vista Previa del Dashboard
 
-*Aquí es donde puedes poner una captura de pantalla. Sube una imagen a tu repositorio y reemplaza el texto de abajo.*
-
 ![Vista previa del Dashboard de Gestión Textil](img/dashboard.png)
 
 ---
